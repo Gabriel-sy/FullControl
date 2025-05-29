@@ -1,0 +1,22 @@
+{
+  "TituloTela": "Teste",
+  "ComponenteRaiz": "Canvas",
+  "Largura": 1000,
+  "Altura": 1000,
+  "PropriedadesAdicionais": {
+    "Background": "Black"
+  },
+  "Filhos": [
+    {
+      "Tipo": "BotaoDefault",
+      "BindingPath": "BotaoDefault.texto",
+      "Largura": 100,
+      "Altura": 30,
+      "PosicaoTop": "500",
+      "PosicaoLeft": "500",
+      "PropriedadesAdicionais": {
+        "Background": "White"
+      }
+    }
+  ]
+}

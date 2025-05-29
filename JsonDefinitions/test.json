@@ -1,0 +1,47 @@
+{
+  "TituloTela": "Teste de Posicionamento Canvas",
+  "ComponenteRaiz": {
+    "Tipo": "Canvas",
+    "Largura": 780,
+    "Altura": 560,
+    "PropriedadesAdicionais": {
+      "Background": "LightSteelBlue"
+    },
+    "Filhos": [
+      {
+        "Tipo": "Label",
+        "Conteudo": "Posicionado Absolutamente!",
+        "Largura": 200,
+        "Altura": 30,
+        
+        "PosicaoTop": "0",
+        "PosicaoLeft": "100",
+        "PropriedadesAdicionais": {
+          "Background": "LightYellow"
+        }
+      },
+      {
+        "Tipo": "Button",
+        "Conteudo": "Clique Aqui",
+        "Largura": 120,
+        "Altura": 40,
+        "PosicaoTop": "120.5",
+        "PosicaoLeft": "250"
+      },
+      {
+        "Tipo": "TextBox",
+        "Largura": 150,
+        "PosicaoTop": "200",
+        "PosicaoLeft": "50"
+      },
+      {
+        "Tipo": "BotaoDefault",
+        "Largura": 100,
+        "Altura": 30,
+        "PosicaoTop": "200",
+        "PosicaoRight": "100",
+        "BindingPath": "BotaoDefault.texto"
+      }
+    ]
+  }
+}
