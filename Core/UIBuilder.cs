@@ -13,6 +13,7 @@ namespace FullControl.Wpf.Core
     public class UIBuilder
     {
         private readonly Dictionary<string, Type> _componentRegistry;
+        private readonly Dictionary<string, Type> _validatorRegistry;
 
         public UIBuilder()
         {
@@ -29,6 +30,12 @@ namespace FullControl.Wpf.Core
                 { "ComboBox", typeof(ComboBox) },
                 { "Canvas", typeof(Canvas) },
                 { "BotaoDefault", typeof(FullControl.Controls.BotaoDefault) },
+                { "InputDefault", typeof(FullControl.Controls.InputDefault) }
+            };
+
+            _validatorRegistry = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "email", typeof(FullControl.Validators.EmailValidator) }
             };
         }
 
@@ -99,11 +106,30 @@ namespace FullControl.Wpf.Core
 
         private void ApplyProperties(FrameworkElement element, ElementoUIDefinicao def, object? viewModel)
         {
-            // Conteúdo
+
             if (!string.IsNullOrEmpty(def.Conteudo))
             {
-                if (element is ContentControl cc) cc.Content = def.Conteudo;
-                else if (element is TextBlock tb) tb.Text = def.Conteudo;
+                if (element is ContentControl cc && cc.Content == null) // Só define se não for ser sobrescrito por binding no Content
+                {
+                    // Verificamos se já existe um binding para "Content" ou "Texto"
+                    bool contentIsBound = def.Bindings?.Any(b =>
+                        b.TipoAlvo.Equals("texto", StringComparison.OrdinalIgnoreCase) ||
+                        b.TipoAlvo.Equals("content", StringComparison.OrdinalIgnoreCase)) ?? false;
+
+                    if (!contentIsBound) // Só aplica o conteúdo estático se não houver binding para ele
+                    {
+                        cc.Content = def.Conteudo;
+                    }
+                }
+                else if (element is TextBlock tb && tb.Text == null) // Similar para TextBlock
+                {
+                    bool textIsBound = def.Bindings?.Any(b =>
+                        b.TipoAlvo.Equals("texto", StringComparison.OrdinalIgnoreCase)) ?? false;
+                    if (!textIsBound)
+                    {
+                        tb.Text = def.Conteudo;
+                    }
+                }
             }
 
             // Dimensões
@@ -138,27 +164,64 @@ namespace FullControl.Wpf.Core
             if (element is StackPanel sp && !string.IsNullOrEmpty(def.OrientacaoStackPanel) && Enum.TryParse<Orientation>(def.OrientacaoStackPanel, true, out var orientation))
                 sp.Orientation = orientation;
 
-            // Data Binding
-            if (!string.IsNullOrEmpty(def.BindingPath) && viewModel != null)
+            if (def.Bindings != null && def.Bindings.Any() && viewModel != null)
             {
-                Binding binding = new Binding(def.BindingPath) { Source = viewModel };
-                DependencyProperty? dpToBind = null;
-                if (element is TextBox) dpToBind = TextBox.TextProperty;
-                else if (element is TextBlock) dpToBind = TextBlock.TextProperty;
-                else if (element is CheckBox) dpToBind = CheckBox.IsCheckedProperty;
-                else if (element is ComboBox) dpToBind = ComboBox.SelectedValueProperty;
-                else if (element is ContentControl && string.IsNullOrEmpty(def.Conteudo)) dpToBind = ContentControl.ContentProperty;
-                else if (element is Button) dpToBind = Button.ContentProperty;
-                else if (element is Label) dpToBind = Label.ContentProperty;
-                else if (element is Border) dpToBind = Border.BackgroundProperty;
-                else if (element is Canvas) dpToBind = Canvas.BackgroundProperty;
-                else if (element is Panel) dpToBind = Panel.BackgroundProperty; 
-                // Adicionar mais mapeamentos...
-                if (dpToBind != null) element.SetBinding(dpToBind, binding);
-                else System.Diagnostics.Debug.WriteLine($"Aviso: BindingPath '{def.BindingPath}' para '{def.Tipo}' mas propriedade alvo não mapeada.");
+                foreach (var bindingDef in def.Bindings)
+                {
+                    if (string.IsNullOrEmpty(bindingDef.TipoAlvo) || string.IsNullOrEmpty(bindingDef.BindingPath))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Aviso: Binding incompleto no JSON. TipoAlvo='{bindingDef.TipoAlvo}', Path='{bindingDef.BindingPath}'.");
+                        continue;
+                    }
+
+                    Binding binding = new Binding(bindingDef.BindingPath) { Source = viewModel };
+
+                    // Definir Modo do Binding (opcional)
+                    if (!string.IsNullOrEmpty(bindingDef.Modo) && Enum.TryParse<BindingMode>(bindingDef.Modo, true, out var mode))
+                    {
+                        binding.Mode = mode;
+                    }
+
+                    if (bindingDef.Validacoes != null && bindingDef.Validacoes.Any())
+                    {
+                        foreach (string nomeValidador in bindingDef.Validacoes)
+                        {
+                            if (_validatorRegistry.TryGetValue(nomeValidador, out Type? tipoValidador) && tipoValidador != null)
+                            {
+                                try
+                                {
+                                    ValidationRule? regra = Activator.CreateInstance(tipoValidador) as ValidationRule;
+                                    if (regra != null)
+                                    {
+                                        binding.ValidationRules.Add(regra);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Erro ao instanciar validador '{nomeValidador}': {ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Aviso: Validador '{nomeValidador}' não registrado no UIBuilder.");
+                            }
+                        }
+                    }
+
+                    DependencyProperty? dpToBind = ResolveDependencyProperty(element, bindingDef.TipoAlvo);
+
+                    if (dpToBind != null)
+                    {
+                        element.SetBinding(dpToBind, binding);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Aviso: Não foi possível resolver a DependencyProperty para TipoAlvo '{bindingDef.TipoAlvo}' no elemento '{element.GetType().Name}'. BindingPath='{bindingDef.BindingPath}'.");
+                    }
+                }
             }
 
-            // Ações (Commands)
+            // OnClick
             if (element is System.Windows.Controls.Primitives.ButtonBase btnBase && !string.IsNullOrEmpty(def.AcaoClick) && viewModel != null)
             {
                 Binding commandBinding = new Binding(def.AcaoClick) { Source = viewModel };
@@ -196,6 +259,64 @@ namespace FullControl.Wpf.Core
                     }
                 }
             }
+        }
+
+        private DependencyProperty? ResolveDependencyProperty(FrameworkElement element, string tipoAlvo)
+        {
+            string targetPropName = tipoAlvo.ToLowerInvariant();
+            switch (targetPropName)
+            {
+                case "texto":
+                case "content": // Permitir "content" como alias para "texto"
+                    if (element is TextBox) return TextBox.TextProperty;
+                    if (element is TextBlock) return TextBlock.TextProperty;
+                    if (element is ContentControl) return ContentControl.ContentProperty; // Abrange Button, Label, BotaoDefault
+                    break;
+                case "background":
+                case "corfundo":
+                    if (element is Control) return Control.BackgroundProperty;
+                    if (element is Panel) return Panel.BackgroundProperty; // Abrange Canvas, Grid, StackPanel
+                    if (element is Border) return Border.BackgroundProperty;
+                    // Para TextBlock, Background é uma propriedade direta, não DP da mesma forma que Control/Panel
+                    // if (element is TextBlock) return TextBlock.BackgroundProperty; // TextBlock.Background não é DP para binding direto assim, mas Brush.
+                    break;
+                case "foreground":
+                case "cortexto":
+                    if (element is Control) return Control.ForegroundProperty;
+                    if (element is TextBlock) return TextBlock.ForegroundProperty;
+                    // Adicionar mais se necessário
+                    break;
+                case "visibilidade":
+                case "visibility":
+                    return UIElement.VisibilityProperty;
+                case "habilitado":
+                case "isenabled":
+                    return UIElement.IsEnabledProperty;
+                case "largura":
+                case "width":
+                    return FrameworkElement.WidthProperty;
+                case "altura":
+                case "height":
+                    return FrameworkElement.HeightProperty;
+                case "itens":
+                case "itemssource":
+                    if (element is ItemsControl) return ItemsControl.ItemsSourceProperty;
+                    break;
+                case "valorselecionado":
+                case "selectedvalue":
+                    if (element is System.Windows.Controls.Primitives.Selector selector) return System.Windows.Controls.Primitives.Selector.SelectedValueProperty;
+                    break;
+                case "marcado":
+                case "ischecked":
+                    if (element is System.Windows.Controls.Primitives.ToggleButton toggle) return System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty;
+                    break;
+                    // Adicione mais mapeamentos conforme sua necessidade.
+                    // Você pode até usar reflexão para encontrar a DependencyProperty pelo nome,
+                    // mas um switch/dicionário é mais seguro e explícito.
+                    // Ex: case "tooltip": return FrameworkElement.ToolTipProperty;
+            }
+            System.Diagnostics.Debug.WriteLine($"Não foi possível encontrar uma DependencyProperty correspondente para TipoAlvo: '{tipoAlvo}' no elemento do tipo '{element.GetType().Name}'.");
+            return null;
         }
     }
 }

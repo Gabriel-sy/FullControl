@@ -30,7 +30,7 @@ namespace FullControl.Views
         public DynamicViewWindow(string jsonFileName = "test.json", object? viewModel = null)
         {
             InitializeComponent();
-
+            this.WindowState = WindowState.Maximized;
             _jsonParser = new JsonParser();
             _uiBuilder = new UIBuilder();
             _viewModel = viewModel;
@@ -51,7 +51,8 @@ namespace FullControl.Views
 
             if (!File.Exists(jsonFilePath))
             {
-                DynamicContentHost.Content = new TextBlock { Text = $"Arquivo JSON não encontrado: {jsonFileName}", Foreground = Brushes.Red };
+                MainCanvasHost.Children.Clear();
+                MainCanvasHost.Children.Add(new TextBlock { Text = $"Arquivo JSON não encontrado: {jsonFileName}", Foreground = Brushes.Red, Margin = new Thickness(10) });
                 return;
             }
 
@@ -59,35 +60,49 @@ namespace FullControl.Views
 
             if (telaDef == null)
             {
-                DynamicContentHost.Content = new TextBlock { Text = $"Erro ao parsear o arquivo JSON: {jsonFileName}", Foreground = Brushes.Red };
+                MainCanvasHost.Children.Clear();
+                MainCanvasHost.Children.Add(new TextBlock { Text = $"Erro ao parsear o arquivo JSON: {jsonFileName}", Foreground = Brushes.Red, Margin = new Thickness(10) });
                 return;
             }
 
-            // Define o título da janela se especificado no JSON e não houver binding no ViewModel
             if (!string.IsNullOrEmpty(telaDef.TituloTela))
             {
-                // Se o DataContext (ViewModel) tiver uma propriedade TituloTela e a Window.Title estiver bindada a ela,
-                // o ideal é que o ViewModel controle o título.
-                // Mas para um override direto do JSON:
                 this.Title = telaDef.TituloTela;
             }
+
+            MainCanvasHost.Children.Clear();
 
 
             if (telaDef.ComponenteRaiz != null)
             {
-                FrameworkElement? rootUiElement = _uiBuilder.BuildElement(telaDef.ComponenteRaiz, _viewModel);
-                if (rootUiElement != null)
+                if (telaDef.ComponenteRaiz.PropriedadesAdicionais != null &&
+                    telaDef.ComponenteRaiz.PropriedadesAdicionais.TryGetValue("Background", out string? bgValue) &&
+                    !string.IsNullOrEmpty(bgValue))
                 {
-                    DynamicContentHost.Content = rootUiElement;
+                    try
+                    {
+                        MainCanvasHost.Background = (Brush)new BrushConverter().ConvertFromString(bgValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Erro ao aplicar background do ComponenteRaiz ao MainCanvasHost: {ex.Message}");
+                    }
                 }
-                else
+                if (telaDef.ComponenteRaiz.Filhos != null)
                 {
-                    DynamicContentHost.Content = new TextBlock { Text = "Falha ao construir o elemento raiz da UI.", Foreground = Brushes.Red };
+                    foreach (var filhoDef in telaDef.ComponenteRaiz.Filhos)
+                    {
+                        FrameworkElement? childElement = _uiBuilder.BuildElement(filhoDef, _viewModel);
+                        if (childElement != null)
+                        {
+                            MainCanvasHost.Children.Add(childElement);
+                        }
+                    }
                 }
             }
             else
             {
-                DynamicContentHost.Content = new TextBlock { Text = "JSON não define um ComponenteRaiz.", Foreground = Brushes.Red };
+                MainCanvasHost.Children.Add(new TextBlock { Text = "JSON não define um ComponenteRaiz ou ComponenteRaiz não tem filhos para exibir.", Margin = new Thickness(10) });
             }
         }
     }

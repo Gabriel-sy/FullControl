@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FullControl.Views"
         mc:Ignorable="d"
-        Title="Tela Dinâmica" Height="600" Width="800">
+        Title="Tela Dinâmica">
     <Grid>
-        <Canvas>
-            <ContentControl x:Name="DynamicContentHost"/>
+        <Canvas x:Name="MainCanvasHost">
         </Canvas>
     </Grid>
 </Window>

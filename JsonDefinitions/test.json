@@ -1,46 +1,56 @@
 {
-  "TituloTela": "Teste de Posicionamento Canvas",
+  "TituloTela": "Teste de Tela Maximizada",
   "ComponenteRaiz": {
     "Tipo": "Canvas",
-    "Largura": 780,
-    "Altura": 560,
     "PropriedadesAdicionais": {
       "Background": "LightSteelBlue"
     },
     "Filhos": [
       {
         "Tipo": "Label",
-        "Conteudo": "Posicionado Absolutamente!",
+        "Conteudo": "Digite as informações (Tela Maximizada):",
+        "PosicaoLeft": "20",
+        "PosicaoTop": "20",
+        "PropriedadesAdicionais": { "Background": "LightYellow" }
+      },
+      {
+        "Tipo": "InputDefault",
         "Largura": 200,
-        "Altura": 30,
-        
-        "PosicaoTop": "0",
-        "PosicaoLeft": "100",
-        "PropriedadesAdicionais": {
-          "Background": "LightYellow"
-        }
+        "Altura": 25,
+        "PosicaoLeft": "20",
+        "PosicaoTop": "50",
+        "Bindings": [
+          {
+            "TipoAlvo": "texto",
+            "BindingPath": "BotaoDefault.input", 
+            "Modo": "TwoWay",
+            "Validacoes": [ "email" ]
+          }
+        ]
       },
       {
-        "Tipo": "Button",
-        "Conteudo": "Clique Aqui",
-        "Largura": 120,
-        "Altura": 40,
-        "PosicaoTop": "120.5",
-        "PosicaoLeft": "250"
-      },
-      {
-        "Tipo": "TextBox",
-        "Largura": 150,
-        "PosicaoTop": "200",
-        "PosicaoLeft": "50"
+        "Tipo": "InputDefault",
+        "Largura": 200,
+        "Altura": 25,
+        "PosicaoLeft": "20",
+        "PosicaoTop": "85",
+        "Bindings": [
+          {
+            "TipoAlvo": "texto",
+            "BindingPath": "BotaoDefault.input",
+            "Modo": "TwoWay",
+            "Validacoes": [ "email" ]
+          }
+        ]
       },
       {
         "Tipo": "BotaoDefault",
+        "Conteudo": "Enviar",
         "Largura": 100,
-        "Altura": 30,
-        "PosicaoTop": "200",
-        "PosicaoRight": "100",
-        "BindingPath": "BotaoDefault.texto"
+        "Altura": 35, 
+        "PosicaoTop": "125",
+        "PosicaoLeft": "20",
+        "PropriedadesAdicionais": { "Background": "Black" }
       }
     ]
   }

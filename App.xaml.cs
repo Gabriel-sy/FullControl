@@ -16,7 +16,7 @@ namespace FullControl
             base.OnStartup(e);
 
             // Exemplo: Carregar uma tela JSON padrão ao iniciar
-            string arquivoJsonInicial = "outraPagina.json"; // Ou o nome do seu JSON de tela inicial
+            string arquivoJsonInicial = "test.json"; // Ou o nome do seu JSON de tela inicial
                                                                   // object? viewModelInicial = new MinhaTelaViewModel(); // Crie uma instância do seu ViewModel se necessário
             object? viewModelInicial = new MainViewModel(); // Ou passe null se não tiver um ViewModel para este momento
 

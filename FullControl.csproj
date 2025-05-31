@@ -9,10 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="JsonDefinitions\outraPagina.json" />
     <None Remove="JsonDefinitions\test.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="JsonDefinitions\outraPagina.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="JsonDefinitions\test.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
