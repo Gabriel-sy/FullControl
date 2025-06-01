@@ -20,7 +20,7 @@
 
                 this.Loaded += BotaoDefault_Loaded;
 
-                this.Click += BotaoDefault_Click;
+                //this.Click += BotaoDefault_Click;
             }
 
             private void BotaoDefault_Loaded(object sender, RoutedEventArgs e)
@@ -39,24 +39,24 @@
                 }
             }
 
-            private void BotaoDefault_Click(object sender, RoutedEventArgs e)
-            {
-                if (_foiClicado)
-                {
-                    this.Content = _conteudoOriginal;
-                    this.Background = Brushes.DodgerBlue;
-                    _foiClicado = false;
-                }
-                else
-                {
-                    if (this.Content?.ToString() != "Clicado!")
-                    {
-                        _conteudoOriginal = this.Content?.ToString();
-                    }
-                    this.Content = "Clicado!";
-                    this.Background = Brushes.RoyalBlue; 
-                    _foiClicado = true;
-                }
-            }
+            //private void BotaoDefault_Click(object sender, RoutedEventArgs e)
+            //{
+            //    if (_foiClicado)
+            //    {
+            //        this.Content = _conteudoOriginal;
+            //        this.Background = Brushes.DodgerBlue;
+            //        _foiClicado = false;
+            //    }
+            //    else
+            //    {
+            //        if (this.Content?.ToString() != "Clicado!")
+            //        {
+            //            _conteudoOriginal = this.Content?.ToString();
+            //        }
+            //        this.Content = "Clicado!";
+            //        this.Background = Brushes.RoyalBlue; 
+            //        _foiClicado = true;
+            //    }
+            //}
         }
     }

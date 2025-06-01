@@ -235,23 +235,14 @@ namespace FullControl.Wpf.Core
                 {
                     try
                     {
-                        // Exemplo simples para Background (que é comum para Canvas e outros Panels)
-                        if (prop.Key.Equals("Background", StringComparison.OrdinalIgnoreCase) && element is Panel panelElement) // Canvas herda de Panel
+                        if (prop.Key.Equals("Background", StringComparison.OrdinalIgnoreCase) && element is Panel panelElement) 
                         {
                             panelElement.Background = (Brush)new BrushConverter().ConvertFromString(prop.Value);
                         }
-                        else if (prop.Key.Equals("Background", StringComparison.OrdinalIgnoreCase) && element is Control controlElement) // Button, Label herdam de Control
+                        else if (prop.Key.Equals("Background", StringComparison.OrdinalIgnoreCase) && element is Control controlElement)
                         {
                             controlElement.Background = (Brush)new BrushConverter().ConvertFromString(prop.Value);
                         }
-                        // Adicionar mais mapeamentos para outras propriedades comuns ou usar reflexão (mais complexo)
-                        // else {
-                        //    var propertyInfo = element.GetType().GetProperty(prop.Key);
-                        //    if (propertyInfo != null && propertyInfo.CanWrite) {
-                        //        object convertedValue = Convert.ChangeType(prop.Value, propertyInfo.PropertyType);
-                        //        propertyInfo.SetValue(element, convertedValue);
-                        //    }
-                        // }
                     }
                     catch (Exception ex)
                     {
@@ -267,7 +258,7 @@ namespace FullControl.Wpf.Core
             switch (targetPropName)
             {
                 case "texto":
-                case "content": // Permitir "content" como alias para "texto"
+                case "content":
                     if (element is TextBox) return TextBox.TextProperty;
                     if (element is TextBlock) return TextBlock.TextProperty;
                     if (element is ContentControl) return ContentControl.ContentProperty; // Abrange Button, Label, BotaoDefault
@@ -275,10 +266,8 @@ namespace FullControl.Wpf.Core
                 case "background":
                 case "corfundo":
                     if (element is Control) return Control.BackgroundProperty;
-                    if (element is Panel) return Panel.BackgroundProperty; // Abrange Canvas, Grid, StackPanel
+                    if (element is Panel) return Panel.BackgroundProperty;
                     if (element is Border) return Border.BackgroundProperty;
-                    // Para TextBlock, Background é uma propriedade direta, não DP da mesma forma que Control/Panel
-                    // if (element is TextBlock) return TextBlock.BackgroundProperty; // TextBlock.Background não é DP para binding direto assim, mas Brush.
                     break;
                 case "foreground":
                 case "cortexto":
@@ -310,10 +299,6 @@ namespace FullControl.Wpf.Core
                 case "ischecked":
                     if (element is System.Windows.Controls.Primitives.ToggleButton toggle) return System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty;
                     break;
-                    // Adicione mais mapeamentos conforme sua necessidade.
-                    // Você pode até usar reflexão para encontrar a DependencyProperty pelo nome,
-                    // mas um switch/dicionário é mais seguro e explícito.
-                    // Ex: case "tooltip": return FrameworkElement.ToolTipProperty;
             }
             System.Diagnostics.Debug.WriteLine($"Não foi possível encontrar uma DependencyProperty correspondente para TipoAlvo: '{tipoAlvo}' no elemento do tipo '{element.GetType().Name}'.");
             return null;

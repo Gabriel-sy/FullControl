@@ -1,57 +1,58 @@
-{
-  "TituloTela": "Teste de Tela Maximizada",
-  "ComponenteRaiz": {
-    "Tipo": "Canvas",
-    "PropriedadesAdicionais": {
-      "Background": "LightSteelBlue"
-    },
-    "Filhos": [
-      {
-        "Tipo": "Label",
-        "Conteudo": "Digite as informações (Tela Maximizada):",
-        "PosicaoLeft": "20",
-        "PosicaoTop": "20",
-        "PropriedadesAdicionais": { "Background": "LightYellow" }
+  {
+    "TituloTela": "Teste de Tela Maximizada",
+    "ComponenteRaiz": {
+      "Tipo": "Canvas",
+      "PropriedadesAdicionais": {
+        "Background": "LightSteelBlue"
       },
-      {
-        "Tipo": "InputDefault",
-        "Largura": 200,
-        "Altura": 25,
-        "PosicaoLeft": "20",
-        "PosicaoTop": "50",
-        "Bindings": [
-          {
-            "TipoAlvo": "texto",
-            "BindingPath": "BotaoDefault.input", 
-            "Modo": "TwoWay",
-            "Validacoes": [ "email" ]
-          }
-        ]
-      },
-      {
-        "Tipo": "InputDefault",
-        "Largura": 200,
-        "Altura": 25,
-        "PosicaoLeft": "20",
-        "PosicaoTop": "85",
-        "Bindings": [
-          {
-            "TipoAlvo": "texto",
-            "BindingPath": "BotaoDefault.input",
-            "Modo": "TwoWay",
-            "Validacoes": [ "email" ]
-          }
-        ]
-      },
-      {
-        "Tipo": "BotaoDefault",
-        "Conteudo": "Enviar",
-        "Largura": 100,
-        "Altura": 35, 
-        "PosicaoTop": "125",
-        "PosicaoLeft": "20",
-        "PropriedadesAdicionais": { "Background": "Black" }
-      }
-    ]
+      "Filhos": [
+        {
+          "Tipo": "Label",
+          "Conteudo": "Digite as informações (Tela Maximizada):",
+          "PosicaoLeft": "20",
+          "PosicaoTop": "20",
+          "PropriedadesAdicionais": { "Background": "LightYellow" }
+        },
+        {
+          "Tipo": "InputDefault",
+          "Largura": 200,
+          "Altura": 25,
+          "PosicaoLeft": "20",
+          "PosicaoTop": "50",
+          "Bindings": [
+            {
+              "TipoAlvo": "texto",
+              "BindingPath": "BotaoDefault.input", 
+              "Modo": "TwoWay",
+              "Validacoes": [ "email" ]
+            }
+          ]
+        },
+        {
+          "Tipo": "InputDefault",
+          "Largura": 200,
+          "Altura": 25,
+          "PosicaoLeft": "20",
+          "PosicaoTop": "85",
+          "Bindings": [
+            {
+              "TipoAlvo": "texto",
+              "BindingPath": "BotaoDefault.input",
+              "Modo": "TwoWay",
+              "Validacoes": [ "email" ]
+            }
+          ]
+        },
+        {
+          "Tipo": "BotaoDefault",
+          "Conteudo": "Enviar",
+          "Largura": 100,
+          "Altura": 35, 
+          "PosicaoTop": "125",
+          "PosicaoLeft": "20",
+          "PropriedadesAdicionais": { "Background": "Black" },
+          "AcaoClick": "MostrarConsoleCommand"
+        }
+      ]
+    }
   }
-}
