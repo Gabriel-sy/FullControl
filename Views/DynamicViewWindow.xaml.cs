@@ -24,9 +24,9 @@ namespace FullControl.Views
     {
         private readonly JsonParser _jsonParser;
         private readonly UIBuilder _uiBuilder;
-        private readonly object? _viewModel; // Seu ViewModel para a tela
+        // ViewModel, com Commands, bindings etc..
+        private readonly object? _viewModel; 
 
-        // Construtor que recebe o nome do arquivo JSON e o ViewModel
         public DynamicViewWindow(string jsonFileName = "test.json", object? viewModel = null)
         {
             InitializeComponent();
@@ -35,8 +35,6 @@ namespace FullControl.Views
             _uiBuilder = new UIBuilder();
             _viewModel = viewModel;
 
-            // Define o DataContext da Janela para o ViewModel fornecido.
-            // Isso permite que bindings dentro da janela (ex: Title) e na UI gerada funcionem.
             if (_viewModel != null)
             {
                 this.DataContext = _viewModel;
@@ -45,7 +43,7 @@ namespace FullControl.Views
             LoadAndRenderUI(jsonFileName);
         }
 
-        private async void LoadAndRenderUI(string jsonFileName)
+        public async void LoadAndRenderUI(string jsonFileName)
         {
             string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JsonDefinitions", jsonFileName);
 

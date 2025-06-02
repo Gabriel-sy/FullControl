@@ -1,5 +1,5 @@
   {
-    "TituloTela": "Teste de Tela Maximizada",
+    "TituloTela": "Teste de Tela",
     "ComponenteRaiz": {
       "Tipo": "Canvas",
       "PropriedadesAdicionais": {
@@ -8,7 +8,7 @@
       "Filhos": [
         {
           "Tipo": "Label",
-          "Conteudo": "Digite as informações (Tela Maximizada):",
+          "Conteudo": "Digite as informações:",
           "PosicaoLeft": "20",
           "PosicaoTop": "20",
           "PropriedadesAdicionais": { "Background": "LightYellow" }

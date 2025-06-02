@@ -109,19 +109,18 @@ namespace FullControl.Wpf.Core
 
             if (!string.IsNullOrEmpty(def.Conteudo))
             {
-                if (element is ContentControl cc && cc.Content == null) // Só define se não for ser sobrescrito por binding no Content
+                if (element is ContentControl cc && cc.Content == null)
                 {
-                    // Verificamos se já existe um binding para "Content" ou "Texto"
                     bool contentIsBound = def.Bindings?.Any(b =>
                         b.TipoAlvo.Equals("texto", StringComparison.OrdinalIgnoreCase) ||
                         b.TipoAlvo.Equals("content", StringComparison.OrdinalIgnoreCase)) ?? false;
-
-                    if (!contentIsBound) // Só aplica o conteúdo estático se não houver binding para ele
+                    // Só aplica se não tiver binding.
+                    if (!contentIsBound)
                     {
                         cc.Content = def.Conteudo;
                     }
                 }
-                else if (element is TextBlock tb && tb.Text == null) // Similar para TextBlock
+                else if (element is TextBlock tb && tb.Text == null)
                 {
                     bool textIsBound = def.Bindings?.Any(b =>
                         b.TipoAlvo.Equals("texto", StringComparison.OrdinalIgnoreCase)) ?? false;
@@ -143,7 +142,7 @@ namespace FullControl.Wpf.Core
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Erro ao converter Margem '{def.Margem}': {ex.Message}"); }
             }
 
-            // Alinhamentos (geralmente para quando o elemento está dentro de um container que os respeita)
+            // Alinhamentos
             if (!string.IsNullOrEmpty(def.AlinhamentoHorizontal) && Enum.TryParse<HorizontalAlignment>(def.AlinhamentoHorizontal, true, out var ha))
                 element.HorizontalAlignment = ha;
             if (!string.IsNullOrEmpty(def.AlinhamentoVertical) && Enum.TryParse<VerticalAlignment>(def.AlinhamentoVertical, true, out var va))
@@ -273,7 +272,6 @@ namespace FullControl.Wpf.Core
                 case "cortexto":
                     if (element is Control) return Control.ForegroundProperty;
                     if (element is TextBlock) return TextBlock.ForegroundProperty;
-                    // Adicionar mais se necessário
                     break;
                 case "visibilidade":
                 case "visibility":

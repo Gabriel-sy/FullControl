@@ -1,63 +1,57 @@
 {
-  "TituloTela": "Teste",
+  "TituloTela": "Teste de Teasdadla",
   "ComponenteRaiz": {
     "Tipo": "Canvas",
-    "Largura": 780,
-    "Altura": 560,
     "PropriedadesAdicionais": {
       "Background": "LightSteelBlue"
     },
     "Filhos": [
       {
         "Tipo": "Label",
-        "Conteudo": "Digite as informações",
-        "PosicaoLeft": "0", 
-        "PosicaoTop": "10", 
-        "PropriedadesAdicionais": {
-          "Background": "LightYellow"
-        }
+        "Conteudo": "TELA 2:",
+        "PosicaoLeft": "20",
+        "PosicaoTop": "20",
+        "PropriedadesAdicionais": { "Background": "LightYellow" }
       },
       {
         "Tipo": "InputDefault",
-        "Largura": 150,
-        "Altura": 20,
-        "PosicaoLeft": "0", 
-        "PosicaoTop": "40", 
+        "Largura": 200,
+        "Altura": 25,
+        "PosicaoLeft": "20",
+        "PosicaoTop": "50",
         "Bindings": [
           {
             "TipoAlvo": "texto",
-            "BindingPath": "BotaoDefault.input1",
-            "Validacoes": [
-              "email"
-            ]
+            "BindingPath": "BotaoDefault.input",
+            "Modo": "TwoWay",
+            "Validacoes": [ "email" ]
           }
         ]
       },
       {
         "Tipo": "InputDefault",
-        "Largura": 150,
-        "Altura": 20,
-        "PosicaoLeft": "0", 
-        "PosicaoTop": "70", 
+        "Largura": 200,
+        "Altura": 25,
+        "PosicaoLeft": "20",
+        "PosicaoTop": "85",
         "Bindings": [
           {
             "TipoAlvo": "texto",
             "BindingPath": "BotaoDefault.input",
-            "Validacoes": [
-              "email" 
-            ]
+            "Modo": "TwoWay",
+            "Validacoes": [ "email" ]
           }
         ]
       },
       {
         "Tipo": "BotaoDefault",
-        "Conteudo": "Enviar", 
-
-        "PosicaoTop": "100", 
-        "PosicaoLeft": "0", 
-        "PropriedadesAdicionais": {
-          "Background": "Black"
-        }
+        "Conteudo": "Enviar",
+        "Largura": 100,
+        "Altura": 35,
+        "PosicaoTop": "125",
+        "PosicaoLeft": "20",
+        "PropriedadesAdicionais": { "Background": "Black" },
+        "AcaoClick": "MostrarConsoleCommand"
       }
     ]
   }

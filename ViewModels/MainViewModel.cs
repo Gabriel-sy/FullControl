@@ -1,4 +1,5 @@
 ﻿using FullControl.Commands;
+using FullControl.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace FullControl.ViewModels
 
         public void mostrarConsole()
         {
+            DynamicViewWindow window = new DynamicViewWindow("outraPagina.json", this);
+            window.Show();
             System.Diagnostics.Debug.WriteLine("DEBUG INFO: Botão pressionado via ICommand!!!");
         }
     }
