@@ -2,30 +2,45 @@
 using FullControl.Views;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
+
 
 namespace FullControl.ViewModels
 {
-    public class MainViewModel
+    public class MainViewModel : INotifyPropertyChanged
     {
+        [DllImport("user32.dll")]
+        static extern IntPtr GetActiveWindow();
+        public event Action<string, object?>? NavegacaoSolicitada;
         public BotaoDefaultViewModel BotaoDefault { get; set; }
-        public ICommand MostrarConsoleCommand { get; }
+        public ICommand NavegarParaOutraPaginaCommand { get; }
 
         public MainViewModel()
         {
             BotaoDefault = new BotaoDefaultViewModel();
 
-            MostrarConsoleCommand = new TestCommand(p => mostrarConsole(), c => true);
+            NavegarParaOutraPaginaCommand = new TestCommand(p => ExecutarNavegacaoOutraPagina(), c => true);
         }
 
-        public void mostrarConsole()
+        public void ExecutarNavegacaoOutraPagina()
         {
-            DynamicViewWindow window = new DynamicViewWindow("outraPagina.json", this);
-            window.Show();
+            object? viewModelParaNovaPagina = this;
+            NavegacaoSolicitada?.Invoke("outraPagina.json", viewModelParaNovaPagina);
             System.Diagnostics.Debug.WriteLine("DEBUG INFO: Botão pressionado via ICommand!!!");
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

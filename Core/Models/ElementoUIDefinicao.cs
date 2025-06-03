@@ -22,7 +22,6 @@ namespace FullControl.Core.Models
         public string? PosicaoBottom { get; set; }
         public string? OrientacaoStackPanel { get; set; }
         public List<DefinicaoBinding>? Bindings { get; set; }
-        public List<string>? Validacoes { get; set; }
         public string? AcaoClick { get; set; }
         public List<ElementoUIDefinicao>? Filhos { get; set; }
         public Dictionary<string, string>? PropriedadesAdicionais { get; set; }

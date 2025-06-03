@@ -1,5 +1,6 @@
 ﻿using FullControl.Core;
 using FullControl.Core.Models;
+using FullControl.ViewModels;
 using FullControl.Wpf.Core;
 using System;
 using System.Collections.Generic;
@@ -24,22 +25,41 @@ namespace FullControl.Views
     {
         private readonly JsonParser _jsonParser;
         private readonly UIBuilder _uiBuilder;
-        // ViewModel, com Commands, bindings etc..
-        private readonly object? _viewModel; 
+        private object? _viewModel; 
 
         public DynamicViewWindow(string jsonFileName = "test.json", object? viewModel = null)
         {
             InitializeComponent();
             this.WindowState = WindowState.Maximized;
+
             _jsonParser = new JsonParser();
             _uiBuilder = new UIBuilder();
-            _viewModel = viewModel;
 
-            if (_viewModel != null)
+            SetupViewModel(viewModel);
+            LoadAndRenderUI(jsonFileName);
+        }
+
+        private void SetupViewModel(object? newViewModel)
+        {
+            if (_viewModel is MainViewModel oldMainVm)
             {
-                this.DataContext = _viewModel;
+                oldMainVm.NavegacaoSolicitada -= HandleNavigationRequested;
             }
 
+            _viewModel = newViewModel;
+            this.DataContext = _viewModel;
+            if (_viewModel is MainViewModel newMainVm)
+            {
+                newMainVm.NavegacaoSolicitada += HandleNavigationRequested;
+            }
+        }
+
+        private void HandleNavigationRequested(string jsonFileName, object? viewModelForNewPage)
+        {
+            if (this._viewModel != viewModelForNewPage)
+            {
+                SetupViewModel(viewModelForNewPage);
+            }
             LoadAndRenderUI(jsonFileName);
         }
 
@@ -101,6 +121,14 @@ namespace FullControl.Views
             else
             {
                 MainCanvasHost.Children.Add(new TextBlock { Text = "JSON não define um ComponenteRaiz ou ComponenteRaiz não tem filhos para exibir.", Margin = new Thickness(10) });
+            }
+        }
+
+        private void DynamicViewWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel is MainViewModel mainVm)
+            {
+                mainVm.NavegacaoSolicitada -= HandleNavigationRequested;
             }
         }
     }

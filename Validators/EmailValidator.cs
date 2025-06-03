@@ -18,6 +18,7 @@ namespace FullControl.Validators
 
             if (!stringValue.Contains("@"))
             {
+                
                 return new ValidationResult(false, "Deve ser um email.");
             }
 

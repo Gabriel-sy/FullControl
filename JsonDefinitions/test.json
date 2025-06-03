@@ -39,7 +39,7 @@
               "TipoAlvo": "texto",
               "BindingPath": "BotaoDefault.input",
               "Modo": "TwoWay",
-              "Validacoes": [ "email" ]
+              "Validacoes": ["email"]
             }
           ]
         },
@@ -47,11 +47,11 @@
           "Tipo": "BotaoDefault",
           "Conteudo": "Enviar",
           "Largura": 100,
-          "Altura": 35, 
+          "Altura": 35,
           "PosicaoTop": "125",
           "PosicaoLeft": "20",
           "PropriedadesAdicionais": { "Background": "Black" },
-          "AcaoClick": "MostrarConsoleCommand"
+          "AcaoClick": "NavegarParaOutraPaginaCommand"
         }
       ]
     }

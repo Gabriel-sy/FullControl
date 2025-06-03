@@ -181,8 +181,10 @@ namespace FullControl.Wpf.Core
                         binding.Mode = mode;
                     }
 
+                    bool hasValidationRules = false;
                     if (bindingDef.Validacoes != null && bindingDef.Validacoes.Any())
                     {
+                        hasValidationRules = true;
                         foreach (string nomeValidador in bindingDef.Validacoes)
                         {
                             if (_validatorRegistry.TryGetValue(nomeValidador, out Type? tipoValidador) && tipoValidador != null)
@@ -211,7 +213,14 @@ namespace FullControl.Wpf.Core
 
                     if (dpToBind != null)
                     {
+                        binding.NotifyOnValidationError = true;
                         element.SetBinding(dpToBind, binding);
+
+                        if (hasValidationRules)
+                        {
+                            
+                            ConfigureFeedbackDeErroVisual(element);
+                        }
                     }
                     else
                     {
@@ -251,6 +260,73 @@ namespace FullControl.Wpf.Core
             }
         }
 
+        private void ConfigureFeedbackDeErroVisual(FrameworkElement element)
+        {
+            object? originalToolTip = element.ToolTip;
+            Brush? originalBorderBrush = null;
+            Thickness originalBorderThickness = new Thickness(0);
+
+            if (element is Control controlElement)
+            {
+                originalBorderBrush = controlElement.BorderBrush;
+                originalBorderThickness = controlElement.BorderThickness;
+            }
+            Validation.AddErrorHandler(element, (sender, args) =>
+            {
+                if (sender == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("VALIDATION ERROR HANDLER: 'sender' é NULL!");
+                    return;
+                }
+
+                var erroredElement = sender as FrameworkElement;
+
+                if (args.Action == ValidationErrorEventAction.Added)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Erro de validação adicionado a: {erroredElement.Name ?? erroredElement.GetType().Name}, Erro: {args.Error.ErrorContent}");
+
+                    if (erroredElement is Control c)
+                    {
+                        c.BorderBrush = Brushes.Red;
+                        c.BorderThickness = new Thickness(1);
+                    }
+                    var firstError = Validation.GetErrors(erroredElement).FirstOrDefault();
+                    
+                    System.Diagnostics.Debug.WriteLine(firstError);
+                    if (firstError != null)
+                    {
+                        erroredElement.ToolTip = firstError.ErrorContent?.ToString();
+                    }
+                }
+                else if (args.Action == ValidationErrorEventAction.Removed)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Erro de validação removido de: {erroredElement.Name ?? erroredElement.GetType().Name}");
+
+                    if (!Validation.GetHasError(erroredElement))
+                    {
+                        if (erroredElement is Control c)
+                        {
+                            c.BorderBrush = originalBorderBrush;
+                            c.BorderThickness = originalBorderThickness;
+                        }
+                        erroredElement.ToolTip = originalToolTip;
+                    }
+                    else
+                    {
+                        var firstError = Validation.GetErrors(erroredElement).FirstOrDefault();
+                        if (firstError != null)
+                        {
+                            erroredElement.ToolTip = firstError.ErrorContent?.ToString();
+                        }
+                        else 
+                        {
+                            erroredElement.ToolTip = originalToolTip; 
+                        }
+                    }
+                }
+            });
+        }
+
         private DependencyProperty? ResolveDependencyProperty(FrameworkElement element, string tipoAlvo)
         {
             string targetPropName = tipoAlvo.ToLowerInvariant();
@@ -260,7 +336,7 @@ namespace FullControl.Wpf.Core
                 case "content":
                     if (element is TextBox) return TextBox.TextProperty;
                     if (element is TextBlock) return TextBlock.TextProperty;
-                    if (element is ContentControl) return ContentControl.ContentProperty; // Abrange Button, Label, BotaoDefault
+                    if (element is ContentControl) return ContentControl.ContentProperty; 
                     break;
                 case "background":
                 case "corfundo":
