@@ -26,16 +26,16 @@ namespace FullControl.Core
         /// </summary>
         /// <param name="jsonString">A string JSON a ser parseada.</param>
         /// <returns>Um objeto TelaDefinicao ou null se o parsing falhar.</returns>
-        public TelaDefinicao? ParseJsonString(string jsonString)
+        public T? ParseJsonString<T>(string jsonString)
         {
             try
             {
-                return JsonSerializer.Deserialize<TelaDefinicao>(jsonString, _options);
+                return JsonSerializer.Deserialize<T>(jsonString, _options);
             }
             catch (JsonException ex)
             {
                 Console.WriteLine($"Erro ao parsear JSON: {ex.Message}");
-                return null;
+                return default;
             }
         }
 
@@ -44,22 +44,22 @@ namespace FullControl.Core
         /// </summary>
         /// <param name="filePath">O caminho para o arquivo JSON.</param>
         /// <returns>Um objeto TelaDefinicao ou null se o parsing falhar ou o arquivo não for encontrado.</returns>
-        public async Task<TelaDefinicao?> ParseJsonFileAsync(string filePath)
+        public async Task<T?> ParseJsonFileAsync<T>(string filePath)
         {
             try
             {
                 if (!File.Exists(filePath))
                 {
                     Console.WriteLine($"Arquivo JSON não encontrado: {filePath}");
-                    return null;
+                    return default;
                 }
                 string jsonString = await File.ReadAllTextAsync(filePath);
-                return ParseJsonString(jsonString);
+                return ParseJsonString<T>(jsonString);
             }
             catch (IOException ex)
             {
                 Console.WriteLine($"Erro ao ler arquivo JSON: {ex.Message}");
-                return null;
+                return default;
             }
         }
     }

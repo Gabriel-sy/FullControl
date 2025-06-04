@@ -2,9 +2,6 @@
   "TituloTela": "Teste de Teasdadla",
   "ComponenteRaiz": {
     "Tipo": "Canvas",
-    "PropriedadesAdicionais": {
-      "Background": "LightSteelBlue"
-    },
     "Filhos": [
       {
         "Tipo": "Label",

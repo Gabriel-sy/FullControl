@@ -27,7 +27,7 @@ namespace FullControl.Views
         private readonly UIBuilder _uiBuilder;
         private object? _viewModel; 
 
-        public DynamicViewWindow(string jsonFileName = "test.json", object? viewModel = null)
+        public DynamicViewWindow(string jsonFileName, object? viewModel = null, string? arquivoTemaInicial = null)
         {
             InitializeComponent();
             this.WindowState = WindowState.Maximized;
@@ -36,7 +36,7 @@ namespace FullControl.Views
             _uiBuilder = new UIBuilder();
 
             SetupViewModel(viewModel);
-            LoadAndRenderUI(jsonFileName);
+            LoadAndRenderUI(jsonFileName, arquivoTemaInicial ?? "DefaultTheme.json");
         }
 
         private void SetupViewModel(object? newViewModel)
@@ -54,34 +54,49 @@ namespace FullControl.Views
             }
         }
 
-        private void HandleNavigationRequested(string jsonFileName, object? viewModelForNewPage)
+        private void HandleNavigationRequested(string jsonFileName, object? viewModelForNewPage, string? arquivoTemaInicial)
         {
             if (this._viewModel != viewModelForNewPage)
             {
                 SetupViewModel(viewModelForNewPage);
             }
-            LoadAndRenderUI(jsonFileName);
+            LoadAndRenderUI(jsonFileName, arquivoTemaInicial ?? "DefaultTheme.json");
         }
 
-        public async void LoadAndRenderUI(string jsonFileName)
+        public async void LoadAndRenderUI(string jsonFileName, string themeName)
         {
             string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JsonDefinitions", jsonFileName);
+            string themeFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes", themeName);
 
-            if (!File.Exists(jsonFilePath))
+            if (!File.Exists(jsonFilePath) || !File.Exists(themeFilePath))
             {
                 MainCanvasHost.Children.Clear();
                 MainCanvasHost.Children.Add(new TextBlock { Text = $"Arquivo JSON não encontrado: {jsonFileName}", Foreground = Brushes.Red, Margin = new Thickness(10) });
                 return;
             }
 
-            TelaDefinicao? telaDef = await _jsonParser.ParseJsonFileAsync(jsonFilePath);
+            Theme? theme = await _jsonParser.ParseJsonFileAsync<Theme>(themeFilePath);
+            TelaDefinicao? telaDef = await _jsonParser.ParseJsonFileAsync<TelaDefinicao>(jsonFilePath);
 
-            if (telaDef == null)
+            if (theme.Fonte != null)
+            {
+                FontFamilyConverter converter = new FontFamilyConverter();
+                this.FontFamily = (FontFamily)converter.ConvertFromString(theme.Fonte);
+            }
+
+            if (theme.TamanhoFonte != null)
+            {
+                this.FontSize = (Double)theme.TamanhoFonte;
+            }
+
+            if (telaDef == null || theme == null)
             {
                 MainCanvasHost.Children.Clear();
                 MainCanvasHost.Children.Add(new TextBlock { Text = $"Erro ao parsear o arquivo JSON: {jsonFileName}", Foreground = Brushes.Red, Margin = new Thickness(10) });
                 return;
             }
+
+            System.Diagnostics.Debug.WriteLine(theme.Fonte);
 
             if (!string.IsNullOrEmpty(telaDef.TituloTela))
             {
@@ -93,6 +108,7 @@ namespace FullControl.Views
 
             if (telaDef.ComponenteRaiz != null)
             {
+                MainCanvasHost.Background = (Brush)new BrushConverter().ConvertFromString(theme.Fundo);
                 if (telaDef.ComponenteRaiz.PropriedadesAdicionais != null &&
                     telaDef.ComponenteRaiz.PropriedadesAdicionais.TryGetValue("Background", out string? bgValue) &&
                     !string.IsNullOrEmpty(bgValue))

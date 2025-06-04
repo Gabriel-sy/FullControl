@@ -120,12 +120,13 @@ namespace FullControl.Wpf.Core
                         cc.Content = def.Conteudo;
                     }
                 }
-                else if (element is TextBlock tb && tb.Text == null)
+                else if (element is TextBlock tb)
                 {
                     bool textIsBound = def.Bindings?.Any(b =>
                         b.TipoAlvo.Equals("texto", StringComparison.OrdinalIgnoreCase)) ?? false;
                     if (!textIsBound)
                     {
+                        tb.IsHitTestVisible = true;
                         tb.Text = def.Conteudo;
                     }
                 }

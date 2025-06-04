@@ -12,11 +12,12 @@ namespace FullControl
         {
             base.OnStartup(e);
 
-            string arquivoJsonInicial = "test.json"; 
+            string arquivoJsonInicial = "test.json";
+            string arquivoTemaInicial = "DefaultTheme.json";
                                                                  
             object? viewModelInicial = new MainViewModel(); 
 
-            DynamicViewWindow mainWindow = new DynamicViewWindow(arquivoJsonInicial, viewModelInicial);
+            DynamicViewWindow mainWindow = new DynamicViewWindow(arquivoJsonInicial, viewModelInicial, arquivoTemaInicial);
             mainWindow.Show();
         }
     }

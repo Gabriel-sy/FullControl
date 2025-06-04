@@ -8,7 +8,7 @@ namespace FullControl.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public event Action<string, object?>? NavegacaoSolicitada;
+        public event Action<string, object?, string?>? NavegacaoSolicitada;
         public BotaoDefaultViewModel BotaoDefault { get; set; }
         public ICommand NavegarParaOutraPaginaCommand { get; }
 
@@ -22,7 +22,7 @@ namespace FullControl.ViewModels
         public void ExecutarNavegacaoOutraPagina()
         {
             object? viewModelParaNovaPagina = this;
-            NavegacaoSolicitada?.Invoke("outraPagina.json", viewModelParaNovaPagina);
+            NavegacaoSolicitada?.Invoke("outraPagina.json", viewModelParaNovaPagina, "RedTheme.json");
             System.Diagnostics.Debug.WriteLine("DEBUG INFO: Botão pressionado via ICommand!!!");
         }
 

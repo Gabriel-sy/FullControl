@@ -2,44 +2,54 @@
     "TituloTela": "Teste de Tela",
     "ComponenteRaiz": {
       "Tipo": "Canvas",
-      "PropriedadesAdicionais": {
-        "Background": "LightSteelBlue"
-      },
+
       "Filhos": [
         {
-          "Tipo": "Label",
+          "Tipo": "TextBlock",
           "Conteudo": "Digite as informações:",
           "PosicaoLeft": "20",
           "PosicaoTop": "20",
           "PropriedadesAdicionais": { "Background": "LightYellow" }
         },
         {
-          "Tipo": "InputDefault",
-          "Largura": 200,
-          "Altura": 25,
+          "Tipo": "Label",
+          "Conteudo": "Email:",
           "PosicaoLeft": "20",
-          "PosicaoTop": "50",
-          "Bindings": [
-            {
-              "TipoAlvo": "texto",
-              "BindingPath": "BotaoDefault.input", 
-              "Modo": "TwoWay",
-              "Validacoes": [ "email" ]
-            }
-          ]
+          "PosicaoTop": "45"
         },
         {
           "Tipo": "InputDefault",
           "Largura": 200,
           "Altura": 25,
           "PosicaoLeft": "20",
-          "PosicaoTop": "85",
+          "PosicaoTop": "70",
           "Bindings": [
             {
               "TipoAlvo": "texto",
               "BindingPath": "BotaoDefault.input",
               "Modo": "TwoWay",
-              "Validacoes": ["email"]
+              "Validacoes": [ "email" ]
+            }
+          ]
+        },
+        {
+          "Tipo": "Label",
+          "Conteudo": "Senha:",
+          "PosicaoLeft": "20",
+          "PosicaoTop": "90"
+        },
+        {
+          "Tipo": "InputDefault",
+          "Largura": 200,
+          "Altura": 25,
+          "PosicaoLeft": "20",
+          "PosicaoTop": "115",
+          "Bindings": [
+            {
+              "TipoAlvo": "texto",
+              "BindingPath": "BotaoDefault.input",
+              "Modo": "TwoWay",
+              "Validacoes": [ "email" ]
             }
           ]
         },
@@ -48,7 +58,7 @@
           "Conteudo": "Enviar",
           "Largura": 100,
           "Altura": 35,
-          "PosicaoTop": "125",
+          "PosicaoTop": "145",
           "PosicaoLeft": "20",
           "PropriedadesAdicionais": { "Background": "Black" },
           "AcaoClick": "NavegarParaOutraPaginaCommand"
