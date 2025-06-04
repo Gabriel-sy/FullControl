@@ -8,7 +8,6 @@
         {
             private string? _conteudoOriginal;
             private bool _foiClicado = false;
-            public string texto = "Data binding";
 
             public BotaoDefault()
             {
@@ -17,6 +16,7 @@
                 this.Padding = new Thickness(12, 6, 12, 6);
                 this.BorderThickness = new Thickness(0);
                 this.Cursor = System.Windows.Input.Cursors.Hand;
+                
 
                 this.Loaded += BotaoDefault_Loaded;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -16,13 +17,27 @@ namespace FullControl.Validators
         {
             string? stringValue = value as string;
 
-            if (!stringValue.Contains("@"))
+            if (!IsEmailValid(stringValue))
             {
                 
                 return new ValidationResult(false, "Deve ser um email.");
             }
 
             return ValidationResult.ValidResult;
+        }
+
+        public bool IsEmailValid(string emailaddress)
+        {
+            try
+            {
+                MailAddress m = new MailAddress(emailaddress);
+
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }
