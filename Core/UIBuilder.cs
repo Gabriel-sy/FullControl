@@ -6,7 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using FullControl.Controls;
 using FullControl.Core.Models;
+using FullControl.Validators;
 
 namespace FullControl.Wpf.Core
 {
@@ -35,11 +37,12 @@ namespace FullControl.Wpf.Core
 
             _validatorRegistry = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
             {
-                { "email", typeof(FullControl.Validators.EmailValidator) }
+                { "email", typeof(FullControl.Validators.EmailValidator) },
+                { "min", typeof(FullControl.Validators.MinValidator) }
             };
         }
 
-        public FrameworkElement? BuildElement(ElementoUIDefinicao definicao, object? viewModel)
+        public FrameworkElement? BuildElement(ElementoUIDefinicao definicao, object? viewModel, Theme? theme = null)
         {
             if (string.IsNullOrEmpty(definicao.Tipo))
             {
@@ -66,7 +69,7 @@ namespace FullControl.Wpf.Core
 
             if (element == null) return new TextBlock { Text = $"Falha ao criar {definicao.Tipo}" };
 
-            ApplyProperties(element, definicao, viewModel);
+            ApplyProperties(element, definicao, viewModel, theme);
 
             if (definicao.Filhos != null && definicao.Filhos.Any())
             {
@@ -104,9 +107,8 @@ namespace FullControl.Wpf.Core
             return element;
         }
 
-        private void ApplyProperties(FrameworkElement element, ElementoUIDefinicao def, object? viewModel)
+        private void ApplyProperties(FrameworkElement element, ElementoUIDefinicao def, object? viewModel, Theme? theme = null)
         {
-
             if (!string.IsNullOrEmpty(def.Conteudo))
             {
                 if (element is ContentControl cc && cc.Content == null)
@@ -126,7 +128,6 @@ namespace FullControl.Wpf.Core
                         b.TipoAlvo.Equals("texto", StringComparison.OrdinalIgnoreCase)) ?? false;
                     if (!textIsBound)
                     {
-                        tb.IsHitTestVisible = true;
                         tb.Text = def.Conteudo;
                     }
                 }
@@ -149,16 +150,20 @@ namespace FullControl.Wpf.Core
             if (!string.IsNullOrEmpty(def.AlinhamentoVertical) && Enum.TryParse<VerticalAlignment>(def.AlinhamentoVertical, true, out var va))
                 element.VerticalAlignment = va;
 
-            // Propriedades de Canvas (só terão efeito se 'element' for filho direto de um Canvas)
-            if (!string.IsNullOrEmpty(def.PosicaoTop) && double.TryParse(def.PosicaoTop, NumberStyles.Any, CultureInfo.InvariantCulture, out var top))
-                Canvas.SetTop(element, top);
-            if (!string.IsNullOrEmpty(def.PosicaoLeft) && double.TryParse(def.PosicaoLeft, NumberStyles.Any, CultureInfo.InvariantCulture, out var left))
-                Canvas.SetLeft(element, left);
-            if (!string.IsNullOrEmpty(def.PosicaoRight) && double.TryParse(def.PosicaoRight, NumberStyles.Any, CultureInfo.InvariantCulture, out var right))
-                Canvas.SetRight(element, right);
-            if (!string.IsNullOrEmpty(def.PosicaoBottom) && double.TryParse(def.PosicaoBottom, NumberStyles.Any, CultureInfo.InvariantCulture, out var bottom))
-                Canvas.SetBottom(element, bottom);
+            var leftPos = double.TryParse(def.PosicaoLeft, NumberStyles.Any, CultureInfo.InvariantCulture, out var left);
+            var topPos = double.TryParse(def.PosicaoTop, NumberStyles.Any, CultureInfo.InvariantCulture, out var top);
+            var rightPos = double.TryParse(def.PosicaoRight, NumberStyles.Any, CultureInfo.InvariantCulture, out var right);
+            var bottomPos = double.TryParse(def.PosicaoBottom, NumberStyles.Any, CultureInfo.InvariantCulture, out var bottom);
 
+            // Propriedades de Canvas (só terão efeito se 'element' for filho direto de um Canvas)
+            if (!string.IsNullOrEmpty(def.PosicaoTop) && topPos)
+                Canvas.SetTop(element, top);
+            if (!string.IsNullOrEmpty(def.PosicaoLeft) && leftPos)
+                Canvas.SetLeft(element, left);
+            if (!string.IsNullOrEmpty(def.PosicaoRight) && rightPos)
+                Canvas.SetRight(element, right);
+            if (!string.IsNullOrEmpty(def.PosicaoBottom) && bottomPos)
+                Canvas.SetBottom(element, bottom);
 
             // Propriedades específicas de Layout Containers
             if (element is StackPanel sp && !string.IsNullOrEmpty(def.OrientacaoStackPanel) && Enum.TryParse<Orientation>(def.OrientacaoStackPanel, true, out var orientation))
@@ -188,13 +193,25 @@ namespace FullControl.Wpf.Core
                         hasValidationRules = true;
                         foreach (string nomeValidador in bindingDef.Validacoes)
                         {
-                            if (_validatorRegistry.TryGetValue(nomeValidador, out Type? tipoValidador) && tipoValidador != null)
+                            var formatado = nomeValidador;
+                            var prop = 3;
+                            if (nomeValidador.Contains("min") || nomeValidador.Contains("max"))
+                            {
+                                var split = nomeValidador.Split(":");
+                                formatado = nomeValidador.Split(":")[0];
+                                prop = int.Parse(nomeValidador.Split(":")[1]);
+                            }
+                            if (_validatorRegistry.TryGetValue(formatado, out Type? tipoValidador) && tipoValidador != null)
                             {
                                 try
                                 {
                                     ValidationRule? regra = Activator.CreateInstance(tipoValidador) as ValidationRule;
                                     if (regra != null)
                                     {
+                                        if (regra is MinValidator mi)
+                                        {
+                                            mi.Prop = prop;
+                                        }
                                         binding.ValidationRules.Add(regra);
                                     }
                                 }

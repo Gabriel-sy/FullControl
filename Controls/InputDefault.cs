@@ -16,7 +16,6 @@ namespace FullControl.Controls
             this.Background = new SolidColorBrush(Colors.LightGray);
             this.BorderThickness = new System.Windows.Thickness(1);
             this.BorderBrush = new SolidColorBrush(Colors.Aqua);
-            
         }
         
     }
