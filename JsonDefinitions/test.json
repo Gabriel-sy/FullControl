@@ -28,7 +28,7 @@
               "TipoAlvo": "texto",
               "BindingPath": "BotaoDefault.input",
               "Modo": "TwoWay",
-              "Validacoes": [ "min:5" ]
+              "Validacoes": [ "min:10" ]
             }
           ]
         },
@@ -49,7 +49,7 @@
               "TipoAlvo": "texto",
               "BindingPath": "BotaoDefault.input",
               "Modo": "TwoWay",
-              "Validacoes": [ "email" ]
+              "Validacoes": [ "email", "max:10" ]
             }
           ]
         },

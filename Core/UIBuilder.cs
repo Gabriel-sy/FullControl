@@ -38,7 +38,8 @@ namespace FullControl.Wpf.Core
             _validatorRegistry = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
             {
                 { "email", typeof(FullControl.Validators.EmailValidator) },
-                { "min", typeof(FullControl.Validators.MinValidator) }
+                { "min", typeof(FullControl.Validators.MinValidator) },
+                { "max", typeof(FullControl.Validators.MaxValidator) },
             };
         }
 
@@ -193,14 +194,8 @@ namespace FullControl.Wpf.Core
                         hasValidationRules = true;
                         foreach (string nomeValidador in bindingDef.Validacoes)
                         {
-                            var formatado = nomeValidador;
-                            var prop = 3;
-                            if (nomeValidador.Contains("min") || nomeValidador.Contains("max"))
-                            {
-                                var split = nomeValidador.Split(":");
-                                formatado = nomeValidador.Split(":")[0];
-                                prop = int.Parse(nomeValidador.Split(":")[1]);
-                            }
+                            var (formatado, prop) = GetValidationProps(nomeValidador);
+                            
                             if (_validatorRegistry.TryGetValue(formatado, out Type? tipoValidador) && tipoValidador != null)
                             {
                                 try
@@ -208,9 +203,9 @@ namespace FullControl.Wpf.Core
                                     ValidationRule? regra = Activator.CreateInstance(tipoValidador) as ValidationRule;
                                     if (regra != null)
                                     {
-                                        if (regra is MinValidator mi)
+                                        if (regra is BaseCustomValidator mi && prop != null)
                                         {
-                                            mi.Prop = prop;
+                                            mi.Prop = (int)prop;
                                         }
                                         binding.ValidationRules.Add(regra);
                                     }
@@ -276,6 +271,20 @@ namespace FullControl.Wpf.Core
                     }
                 }
             }
+        }
+
+        private (string, int?) GetValidationProps(string validationName)
+        {
+            var formatado = validationName;
+            var prop = 3;
+            if (validationName.Contains("min") || validationName.Contains("max"))
+            {
+                var split = validationName.Split(":");
+                formatado = validationName.Split(":")[0];
+                prop = int.Parse(validationName.Split(":")[1]);
+                return (formatado, prop);
+            }
+            return (formatado, null);
         }
 
         private void ConfigureFeedbackDeErroVisual(FrameworkElement element)

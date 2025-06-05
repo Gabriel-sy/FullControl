@@ -8,17 +8,17 @@ using System.Windows.Controls;
 
 namespace FullControl.Validators
 {
-    public class MinValidator : BaseCustomValidator
+    public class MaxValidator : BaseCustomValidator
     {
-
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            string valor = value as string;
+            string stringValue = value as string;
 
-            if (valor.Length < Prop)
+            if (stringValue.Length > Prop)
             {
-                return new ValidationResult(false, "Deve ser maior que " + Prop);
+                return new ValidationResult(false, "Deve ser menor que " + Prop);
             }
+
             return ValidationResult.ValidResult;
         }
     }
